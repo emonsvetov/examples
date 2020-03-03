@@ -82,7 +82,7 @@ Ext.define('App.views.Acts.Finder', {
         Ext.apply(this, {
             items: [me.form],
             buttons: [
-                {text: _js('Выбрать'),  handler: function(){
+                {text: _js('Select'),  handler: function(){
                         var records = me.grid.getSelectionModel().getSelection();
 
                         if (!records.length) {
