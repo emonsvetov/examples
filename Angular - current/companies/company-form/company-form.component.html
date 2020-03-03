@@ -1,0 +1,175 @@
+<div class="animated fadeIn">
+  <div class="card-body" style="padding: 0;">
+    <div class="row">
+      <div class="col" align="left">
+        <ng-template [ngxPermissionsOnly]="[permissions.DASHBOARD_READ]" >
+          <button type="button" class="btn btn-primary" (click)="saveClick()" >
+            <i class="fa fa-plus-square"></i> {{'#Save#'|lang}}
+          </button>
+        </ng-template>
+        <ng-template [ngxPermissionsOnly]="[permissions.DASHBOARD_READ]" >
+          <button type="button" class="btn btn-primary" (click)="cancelClick()" >
+            <i class="fa fa-share"></i> {{'#Cancel#'|lang}}
+          </button>
+        </ng-template>
+      </div>
+      <div class="col" align="right">
+        <ng-template [ngxPermissionsOnly]="[permissions.DASHBOARD_READ]" >
+          <button id="LanguageEditor" class="btn btn-light" (click)="openLanguageEditor()" style="height: 35px"><i class="fa fa-language"></i></button>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+  <div class="card ui" style="">
+      <div class="card-header">
+          <div class="panel-heading">
+            <div class="row align-items-center" >
+              <div class="col" >
+                <i class="fa fa-user fa-lg" style="font-size: 2em;"></i> {{ record.CO1_NAME }}
+              </div>
+              <div class="col" *ngIf="action != 'add'">
+                <div class="row" >
+                  <div class="col" align="right" style="font-size: 12px;" ><strong>{{'#CreatedOn#'|lang}}:</strong></div>
+                  <div class="col" style="font-size: 12px;"  >{{record.CO1_CREATED_BY_NAME}}{{record.CO1_CREATED_ON ? (record.CO1_CREATED_BY_NAME ? ', ': '') + (record.CO1_CREATED_ON|datelocal:'MM.dd.y HH:mm') : '-'}}</div>
+                </div>
+                <div class="row" >
+                  <div class="col" align="right" style="font-size: 12px;" ><strong>{{'#ModifiedOn#'|lang}}:</strong></div>
+                  <div class="col" style="font-size: 12px;" >{{record.CO1_MODIFIED_BY_NAME}}{{record.CO1_MODIFIED_ON ? (record.CO1_MODIFIED_BY_NAME ? ', ': '') + (record.CO1_MODIFIED_ON|datelocal:'MM.dd.y HH:mm') : '-'}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+      <div class="card-body">
+        <form action="" method="post" class="form-horizontal">
+          <div class="row">
+            <div class="col">
+              <ng-template [ngIf]="errors.length" >
+                <mat-error *ngFor="let error of errors" style="padding-top: 5px;">{{error}}</mat-error>
+              </ng-template>
+              <div>
+                <div class="row">
+                  <div class="col">
+                    <mat-form-field class="mat-form-field-width-auto">
+                      <input matInput placeholder="{{'CO1_SHORT_CODE'|lang}}" [(ngModel)]="record.CO1_SHORT_CODE" name="CO1_SHORT_CODE">
+                    </mat-form-field>
+                  </div>
+                  <div class="col">
+                    <mat-form-field class="mat-form-field-width-auto">
+                      <input matInput placeholder="{{'CO1_NAME'|lang}}" [(ngModel)]="record.CO1_NAME" name="CO1_NAME">
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="row">
+                  <div class="col">
+                    <mat-form-field class="mat-form-field-width-auto">
+                      <input matInput placeholder="{{'#AddressStreet1#'|lang}}"  [(ngModel)]="record.CO1_ADDRESS1" name="CO1_ADDRESS1" >
+                    </mat-form-field>
+                  </div>
+                  <div class="col">
+                    <mat-form-field class="mat-form-field-width-auto">
+                      <input matInput placeholder="{{'#AddressStreet2#'|lang}}"  [(ngModel)]="record.CO1_ADDRESS2" name="CO1_ADDRESS2" >
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="row">
+                  <div class="col">
+                    <mat-form-field class="mat-form-field-width-auto">
+                      <input matInput placeholder="{{'#AddressCity#'|lang}}"  [(ngModel)]="record.CO1_CITY" name="CO1_CITY" >
+                    </mat-form-field>
+                  </div>
+                  <div class="col">
+                    <mat-form-field class="mat-form-field-width-auto">
+                      <input matInput placeholder="{{'#AddressState#'|lang}}"  [(ngModel)]="record.CO1_STATE" name="CO1_STATE" >
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="row">
+                  <div class="col">
+                    <mat-form-field class="mat-form-field-width-auto">
+                      <input matInput placeholder="{{'#AddressPostalCode#'|lang}}"  [(ngModel)]="record.CO1_ZIP" name="CO1_ZIP" >
+                    </mat-form-field>
+                  </div>
+                  <div class="col">
+                    <mat-form-field class="mat-form-field-width-auto">
+                      <input matInput placeholder="{{'#Fax#'|lang}}"  [(ngModel)]="record.CO1_FAX" name="CO1_FAX" >
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="row">
+                  <div class="col">
+                    <mat-form-field class="mat-form-field-width-auto">
+                      <input matInput placeholder="{{'#Phone#'|lang}}"  [(ngModel)]="record.CO1_PHONE" name="CO1_PHONE" >
+                    </mat-form-field>
+                  </div>
+                  <div class="col">
+                    <mat-form-field class="mat-form-field-width-auto">
+                      <input matInput placeholder="{{'#SummaryReportEmail#'|lang}}"  [(ngModel)]="record.CO1_SUMMARY_REPORT_EMAIL" name="CO1_SUMMARY_REPORT_EMAIL" >
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="row">
+                  <div class="col">
+                    <div class="row align-items-center">
+                      <div class="col" style="padding-right: 0px;">
+                        <mat-form-field class="mat-form-field-width-auto">
+                          <input matInput placeholder="{{'CY1_NAME'|lang}}" disabled  [(ngModel)]="record.CY1_NAME" name="CY1_NAME" >
+                          <button mat-button *ngIf="record.CY1_ID" matSuffix mat-icon-button aria-label="Clear Country" (click)="clearCountry()" >
+                            <mat-icon>close</mat-icon>
+                          </button>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-auto" style="padding-left: 0px;">
+                        <button mat-button color="primary" (click)="selectCountry()" >{{'CountryButton'|lang}}</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="row">
+                      <mat-form-field style="padding-left: 15px; padding-right: 10px">
+                        <mat-select placeholder="{{'Region'|lang}}" (selectionChange)="onRegionChange()" [(ngModel)]="selectedRegion" name="region">
+                          <mat-option *ngFor="let regione of regiones" [value]="regione">
+                            {{regione.name}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                      <mat-form-field>
+                        <mat-select placeholder="{{'Timezone'|lang}}" [(ngModel)]="record.CO1_TIMEZONE" name="CO1_TIMEZONE">
+                          <mat-option *ngFor="let timezone of timezones" [value]="timezone.Time_zone_id">
+                            {{timezone.TzName}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="row">
+                  <mat-checkbox [labelPosition]="after" [(ngModel)]="record.CO1_MITCHELL_FLAG" name="CO1_MITCHELL_FLAG" style="padding-left: 15px;">
+                    {{'CO1_MITCHELL_FLAG'|lang}}
+                  </mat-checkbox>
+                  <mat-checkbox [labelPosition]="after" [(ngModel)]="record.CO1_CCC_FLAG" name="CO1_CCC_FLAG" style="padding-left: 15px;">
+                    {{'CO1_CCC_FLAG'|lang}}
+                  </mat-checkbox>
+                  <mat-checkbox [labelPosition]="after" [(ngModel)]="record.CO1_LITE" name="CO1_LITE" style="padding-left: 15px;">
+                    {{'CO1_LITE'|lang}}
+                  </mat-checkbox>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+  </div>
+</div>

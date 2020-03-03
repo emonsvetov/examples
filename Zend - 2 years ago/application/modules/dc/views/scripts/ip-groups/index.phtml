@@ -1,0 +1,29 @@
+<script type="text/javascript" >
+    Ext.application({
+        extend: 'Sjx.app.Application',
+        name: 'App',
+        appFolder: Ext.Loader.getPath('App'),
+
+        initStoreData: function () {
+            Sjx.getStore('App.modules.dc.stores.Datacenters').loadData(<?php
+                echo $this->printArrayToJsObj( $this->datacenters, array('dcid', 'name') ); ?>);
+        },
+        launch: function() {
+            Ext.create('App.modules.dc.views.IpGroups.Index', {
+                ip_groups_manage: <?= $this->aclIsAllowed('ip_groups_manage') ? 1 : 0 ?>,
+                sorm_export_setup: <?= $this->aclIsAllowed('sorm_export_setup') ? 1 : 0 ?>
+            });
+        }
+    });
+</script>
+<table width="100%" border="1" cellspacing="0" cellpadding="0" rules="none" >
+    <tr>
+        <th class="menu" > <?=_('IP groups')?><a class="confluence" href="https://confluence.host-telecom.com/pages/viewpage.action?pageId=20840727">
+                <img src="/Images/help.png" alt="<?= _('More in Confluence'); ?>" title="<?= _('Confluence'); ?>"></a></th>
+    </tr> 
+    <tr>
+    <td style="padding:5px;">
+        <div id="ipgroup_panel" ></div>
+    </td>
+    </tr>
+</table>

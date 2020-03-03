@@ -1,0 +1,27 @@
+<script type="text/javascript">
+    Ext.onReady(function (){
+
+        Ext.application({
+            name: 'App',
+            appFolder: Ext.Loader.getPath('App'),
+            controllers: [],
+            launch: function (){
+                var grid=Ext.create('App.modules.dc.views.DeviceTypeGreeting.Grid', {
+                    renderTo: 'grid_deviceTypeGreeting',
+                    width: Ext.get('grid_deviceTypeGreeting').getWidth()
+                });
+                grid.store.load();
+            }
+        });
+    });
+</script>
+<table width="100%" border="1" cellspacing="0" cellpadding="3" rules="none" >
+    <tr>
+        <th class="menu"><?=_('Device Type Greeting'); ?></th>
+    </tr>
+    <tr>
+        <td style="padding-top:10px;">
+            <div id="grid_deviceTypeGreeting"></div>
+        </td>
+    </tr>
+</table>

@@ -1,0 +1,442 @@
+<div [ngStyle]="{'width': loaderWidth}" style="position: fixed; z-index: 200000; height: 100%; margin-left: -15px; margin-top: -21px;" [hidden]="!loading"><ngx-loading [show]="loading" [config]="{ backdropBackgroundColour: 'rgba(211,211,211,0.3)', backdropBorderRadius: '0px' }"></ngx-loading></div>
+<div #masterDataForm  id="masterDataForm" class="animated fadeIn">
+  <div #actionbar class="card-body" style="padding: 0;">
+    <div class="row">
+      <div class="col" align="left">
+        <ng-template [ngxPermissionsOnly]="[permissions.MASTER_DATA_ADD, permissions.MASTER_DATA_EDIT]" >
+          <button type="button" class="btn btn-primary" (click)="saveClick()" >
+            <i class="fa fa-plus-square"></i> {{'#Save#'|lang}}
+          </button>
+        </ng-template>
+        <ng-template [ngxPermissionsOnly]="[permissions.MASTER_DATA_READ]" >
+          <button type="button" class="btn btn-primary" (click)="cancelClick()" >
+            <i class="fa fa-share"></i> {{'#Cancel#'|lang}}
+          </button>
+        </ng-template>
+        <button type="button" class="btn btn-warning" (click)="priceChangeLogClick()" >
+          {{'PriceChangeLogTab'|lang}}
+        </button>
+      </div>
+      <div class="col" align="right">
+        <ng-template [ngxPermissionsOnly]="[permissions.LANGUAGES_EDIT]" >
+          <button id="LanguageEditor" class="btn btn-light" (click)="openLanguageEditor()" style="height: 35px"><i class="fa fa-language"></i></button>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+  <div class="card ui" style="">
+    <div #cardHeader class="card-header">
+      <div class="panel-heading">
+        <div class="row align-items-center" >
+          <div class="col-auto" align="left">
+            <i class="fa fa-user fa-lg" style="font-size: 2em;"></i> {{ record.MD1_PART_NUMBER }}
+          </div>
+          <div class="col" align="right" *ngIf="action != 'add'">
+            <div class="row">
+              <div class="col" align="right" style="font-size: 12px; width: 120px" ><strong>{{'#CreatedOn#'|lang}}:</strong></div>
+              <div class="col-auto" style="font-size: 12px;"  >{{record.MD1_CREATED_BY_NAME}}{{record.CREATED_ON ? (record.MD1_CREATED_BY_NAME ? ', ': '') + (record.CREATED_ON|datelocal:'MM.dd.y HH:mm') : ''}}</div>
+            </div>
+            <div class="row">
+              <div class="col" align="right" style="font-size: 12px; width: 120px" ><strong>{{'#ModifiedOn#'|lang}}:</strong></div>
+              <div class="col-auto" style="font-size: 12px;" >{{record.MD1_MODIFIED_BY_NAME}}{{record.MODIFIED_ON ? (record.MD1_MODIFIED_BY_NAME ? ', ': '') + (record.MODIFIED_ON|datelocal:'MM.dd.y HH:mm') : ''}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body" style="padding-bottom: 0; padding-top: 0">
+      <form action="" method="post" class="form-horizontal" style="padding-top: 10px">
+        <ng-template [ngIf]="errors && errors.length" >
+          <mat-error *ngFor="let error of errors" style="padding-top: 5px;">{{error}}</mat-error>
+        </ng-template>
+
+        <div class="row">
+          <div class="col-8">
+            <div class="container no-paddings" >
+              <div class="row">
+                <div class="col">
+                  <mat-form-field class="mat-form-field-width-auto">
+                    <input matInput placeholder="{{'MD1_PART_NUMBER'|lang}}" [(ngModel)]="record.MD1_PART_NUMBER" name="MD1_PART_NUMBER" tabindex="1">
+                  </mat-form-field>
+                  <div class="col"
+                       *ngIf="errors && errors.MD1_PART_NUMBER">
+                    <div style="color: red">
+                      {{errors.MD1_PART_NUMBER[0]}}
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <mat-form-field class="mat-form-field-width-auto">
+                    <input matInput placeholder="{{'MD1_VENDOR_PART_NUMBER'|lang}}" [(ngModel)]="record.MD1_VENDOR_PART_NUMBER" name="MD1_VENDOR_PART_NUMBER" tabindex="9">
+                  </mat-form-field>
+                  <div class="col"
+                       *ngIf="errors && errors.MD1_VENDOR_PART_NUMBER">
+                    <div style="color: red">
+                      {{errors.MD1_VENDOR_PART_NUMBER[0]}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+
+            <div class="container no-paddings" >
+              <div class="row">
+                <div class="col" >
+                  <div class="row align-items-center">
+                    <div class="col" style="padding-right: 0px;">
+                      <mat-form-field class="mat-form-field-width-auto">
+                        <input matInput placeholder="{{'Company Category'|lang}}" disabled [(ngModel)]="record.CA1_NAME" name="CA1_NAME">
+                        <button type="button" mat-button *ngIf="record.CA1_ID" matSuffix mat-icon-button (click)="clearCategory()">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-md-auto" style="padding-left: 0px;">
+                      <button type="button" mat-button color="primary" (click)="selectCategory()" tabindex="3">{{'Company Category'|lang}}</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="col" >
+                  <div class="row align-items-center">
+                    <div class="col" style="padding-right: 0px;">
+                      <mat-form-field class="mat-form-field-width-auto">
+                        <input matInput placeholder="{{'Nuventory Category'|lang}}" disabled [(ngModel)]="record.C00_NAME" name="C00_NAME">
+                        <button type="button" mat-button *ngIf="record.C00_ID" matSuffix mat-icon-button (click)="clearMasterCategory()">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-md-auto" style="padding-left: 0px;">
+                      <button type="button" mat-button color="primary" (click)="selectMasterCategory()" tabindex="4">{{'Nuventory Category'|lang}}</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="container no-paddings">
+              <ng-template [ngIf]="catalogPartSearchMode">
+                <div class="row align-items-center" >
+                  <div class="col">
+                    <app-part-number-live-search tabindex="5" [partId]="record.MD0_ID" [partNumber]="record.MD0_PART_NUMBER" (partChange)="catalogPartChange($event)"></app-part-number-live-search>
+                  </div>
+                  <div class="col-md-auto" >
+                    <button type="button" mat-button color="primary" tabindex="6" matSuffix mat-icon-button (click)="triggerCatalogPartSearchMode()" >
+                      {{'#Save#'|lang}}
+                    </button>
+                  </div>
+                  <div class="col-md-auto" >
+                    <button type="button" tabindex="7" mat-button matSuffix mat-icon-button (click)="triggerCatalogPartSearchMode()" >
+                      {{'#Cancel#'|lang}}
+                    </button>
+                  </div>
+                </div>
+              </ng-template>
+              <ng-template [ngIf]="!catalogPartSearchMode">
+                <div class="row align-items-center" >
+                  <div class="col" >
+                    <mat-form-field class="mat-form-field-width-auto">
+                      <input matInput placeholder="{{'MD0_ID'|lang}}" [disabled]="true" value="{{ record.MD0_ID ? '[' + record.VD0_NAME + ']' + ' ' + record.MD0_PART_NUMBER + ' - ' + record.MD0_DESC1 : '#None#'|lang }}" >
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-auto" style="padding-left: 0px;" >
+                    <button type="button" tabindex="6" mat-button matSuffix mat-icon-button color="primary" (click)="triggerCatalogPartSearchMode()" >
+                      {{'#Edit#'|lang}}
+                    </button>
+                    <!--<button type="button" tabindex="7" *ngIf="record.MD0_ID" class="btn btn-light" (click)="openLinkCatalogPart()" style="height: 35px"><i class="fa fa-arrow-right"></i></button>-->
+                  </div>
+                </div>
+              </ng-template>
+            </div>
+
+            <div class="container no-paddings" >
+              <div class="row">
+                <div class="col">
+                  <mat-form-field class="mat-form-field-width-auto">
+                    <input matInput placeholder="{{'MD1_UPC1'|lang}}" [(ngModel)]="record.MD1_UPC1" name="MD1_UPC1" tabindex="8">
+                  </mat-form-field>
+                </div>
+                <div class="col">
+                  <mat-form-field class="mat-form-field-width-auto">
+                    <mat-select placeholder="{{'GL1_ID'|lang}}" [(value)]="record.GL1_ID" tabindex="2">
+                      <mat-option *ngFor="let glcode of glCodes" [value]="glcode.GL1_ID">
+                        {{glcode.GL1_NAME}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <div class="col"
+                       *ngIf="errors && errors.GL1_ID">
+                    <div style="color: red">
+                      {{errors.GL1_ID[0]}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="container no-paddings" >
+              <div class="row">
+                <div class="col">
+                  <mat-form-field class="mat-form-field-width-auto">
+                    <input matInput placeholder="{{'MD1_DESC1'|lang}}" [(ngModel)]="record.MD1_DESC1" name="MD1_DESC1" tabindex="10">
+                  </mat-form-field>
+                </div>
+                <div class="col">
+                  <mat-form-field class="mat-form-field-width-auto">
+                    <input matInput placeholder="{{'MD1_OEM_NUMBER'|lang}}" [(ngModel)]="record.MD1_OEM_NUMBER" name="MD1_OEM_NUMBER" tabindex="11">
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+
+            <div class="row align-items-center" >
+              <div class="col">
+                <mat-form-field>
+                  <mat-select placeholder="{{'UM1_PRICE_NAME'|lang}}" [(value)]="record.UM1_PRICING_ID" (selectionChange)="defaultPricingChanged($event)" tabindex="12">
+                    <mat-option *ngFor="let um of umData" [value]="um.UM1_ID">
+                      {{um.UM1_NAME}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <div class="col"
+                     *ngIf="errors && errors.UM1_PRICING_ID">
+                  <div style="color: red">
+                    {{errors.UM1_PRICING_ID[0]}}
+                  </div>
+                </div>
+              </div>
+              <div class="col" >
+                <mat-form-field class="mat-form-field-width-auto">
+                  <input matInput placeholder="{{'MD1_CATALOG_PRICE'|lang}}" step="0.01" [disabled]="true" [(ngModel)]="record.MD0_UNIT_PRICE" name="MD0_UNIT_PRICE" tabindex="13">
+                </mat-form-field>
+              </div>
+              <div class="col" >
+
+              </div>
+            </div>
+
+            <div class="container no-paddings" >
+              <div class="row align-items-center" >
+                <div class="col">
+                  <mat-form-field class="mat-form-field-width-auto">
+                    <input matInput type="number" min="0" step="0.01" (keypress)="restrictInput($event)"  (focus)="$event.target.select()" tabindex="14" placeholder="{{'MD1_UNIT_PRICE'|lang}}"  [(ngModel)]="record.MD1_ORIGINAL_UNIT_PRICE" (input)="marckupChange()" (change)="marckupChange()" name="MD1_ORIGINAL_UNIT_PRICE" >
+                  </mat-form-field>
+                </div>
+                <div class="col">
+                  <mat-form-field class="mat-form-field-width-auto">
+                    <input matInput type="number" min="0" step="0.01" (keypress)="restrictInput($event)" tabindex="15" placeholder="{{'MD1_MARKUP'|lang}}"  [(ngModel)]="record.MD1_MARKUP" name="MD1_MARKUP" (input)="marckupChange()" (change)="marckupChange()">
+                  </mat-form-field>
+                </div>
+                <div class="col">
+                  <mat-form-field class="mat-form-field-width-auto">
+                    <input matInput type="number" min="0" step="0.01"  tabindex="16" placeholder="{{'MD1_SELL_PRICE'|lang}}"  [(ngModel)]="record.MD1_SELL_PRICE" name="MD1_SELL_PRICE" [disabled]="true" >
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+
+            <div class="row align-items-center">
+              <div class="col" style="padding-right: 10px;">
+                <mat-form-field class="mat-form-field-width-auto">
+                  <input matInput placeholder="{{'MD1_SAFETY_URL'|lang}}" [(ngModel)]="record.MD1_SAFETY_URL" name="MD1_SAFETY_URL" tabindex="17">
+                </mat-form-field>
+              </div>
+              <div class="col-md-auto" style="padding-left: 0px;">
+                <button type="button" type="button" class="btn btn-light" (click)="MD1_SAFETY_URL_GO()" tabindex="18">{{'Go'|lang}}</button>
+              </div>
+            </div>
+            <div>
+              <mat-checkbox [labelPosition]="after" [(ngModel)]="record.MD1_CENTRAL_ORDER_FLAG" name="MD1_CENTRAL_ORDER_FLAG" (change)="centralOrderChange($event)" tabindex="19">
+                {{'MD1_CENTRAL_ORDER_FLAG'|lang}}
+              </mat-checkbox>
+            </div>
+
+            <div class="container no-paddings" >
+              <div class="row align-items-center" >
+                <div class="col-2" >
+                  <mat-checkbox [labelPosition]="after" [(ngModel)]="record.MD1_VOC_FLAG" name="MD1_VOC_FLAG" (change)="record.MD1_VOC_FLAG = $event.checked ? 1 : 0;" tabindex="20">
+                    {{'MD1_VOC_FLAG'|lang}}
+                  </mat-checkbox>
+                </div>
+                <div class="col" >
+                  <mat-form-field class="mat-form-field-width-auto">
+                    <input matInput placeholder="{{'MD1_VOC_MFG'|lang}}" [(ngModel)]="record.MD1_VOC_MFG" name="MD1_VOC_MFG" [disabled]="record.MD1_VOC_FLAG != 1" tabindex="21">
+                  </mat-form-field>
+                </div>
+                <div class="col">
+                  <mat-form-field class="mat-form-field-width-auto">
+                    <input matInput placeholder="{{'MD1_VOC_CATA'|lang}}" [(ngModel)]="record.MD1_VOC_CATA" name="MD1_VOC_CATA" [disabled]="record.MD1_VOC_FLAG != 1" tabindex="22">
+                  </mat-form-field>
+                </div>
+                <div class="col" >
+                  <mat-form-field class="mat-form-field-width-auto">
+                    <input matInput placeholder="{{'MD1_VOC_VALUE'|lang}}" [(ngModel)]="record.MD1_VOC_VALUE" name="MD1_VOC_VALUE" [disabled]="record.MD1_VOC_FLAG != 1" tabindex="23">
+                  </mat-form-field>
+                </div>
+                <div class="col-2">
+                  <mat-form-field class="mat-form-field-width-auto" >
+                    <mat-select placeholder="{{'#Select#'|lang}}" [disabled]="record.MD1_VOC_FLAG != 1" [(value)]="record.MD1_VOC_UNIT" tabindex="24">
+                      <mat-option *ngFor="let voc of VOCUnitDP" [value]="voc.value">
+                        {{voc.label}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div>
+              <mat-checkbox [labelPosition]="after"
+                            [(ngModel)]="record.MD1_FAVORITE" name="MD1_FAVORITE"
+                            (change)="record.MD1_FAVORITE = $event.checked ? 1 : 0"  tabindex="25">
+                {{'MD1_FAVORITE'|lang}}
+              </mat-checkbox>
+            </div>
+            <div>
+              <mat-checkbox [labelPosition]="after"
+                            [(ngModel)]="record.MD1_BODY" name="MD1_BODY"
+                            (change)="record.MD1_BODY = $event.checked ? 1 : 0" tabindex="26">
+                {{'MD1_BODY'|lang}}
+              </mat-checkbox>
+            </div>
+            <div>
+              <mat-checkbox [labelPosition]="after"
+                            [(ngModel)]="record.MD1_DETAIL" name="MD1_DETAIL"
+                            (change)="record.MD1_DETAIL = $event.checked ? 1 : 0"  tabindex="27">
+                {{'MD1_DETAIL'|lang}}
+              </mat-checkbox>
+            </div>
+            <div>
+              <mat-checkbox [labelPosition]="after"
+                            [(ngModel)]="record.MD1_PAINT" name="MD1_PAINT"
+                            (change)="record.MD1_PAINT = $event.checked ? 1 : 0"  tabindex="28">
+                {{'MD1_PAINT'|lang}}
+              </mat-checkbox>
+            </div>
+            <div style="margin-top: 20px;">
+              <div class="col" *ngIf="record.FI1_FILE_PATH_EXIST === false">
+                <div *ngIf="record.FI1_FILE_PATH">
+                  <label style="color: #FF4136">{{'Image exist.'|lang}}</label>
+                </div>
+                <div *ngIf="record.FI1_FILE_PATH">
+                  <label style="color: #FF4136">{{record.FI1_FILE_PATH}}</label>
+                </div>
+                <div *ngIf="record.FI1_FILE_PATH">
+                  <label style="color: #FF4136">{{'But for some reason there is no file in the system.'|lang}}</label>
+                </div>
+                <div>
+                  <img mat-card-image src="./assets/img/noimage.png">
+                </div>
+                <div>
+                  <button type="button" class="btn btn-success btn-s" (click)="chooseImage()"  tabindex="29">
+                    {{'Upload an Image'|lang}}
+                  </button>
+                </div>
+              </div>
+              <span *ngIf="record.FI1_FILE_PATH_EXIST === true">
+                <img src="{{record.FI1_FILE_PATH}}" style="max-width: 240px; max-height: 184px">
+                <div>
+                  <button type="button" class="btn btn-success btn-s" (click)="removeImage()"  tabindex="30">
+                    {{'Remove an Image'|lang}}
+                  </button>
+                </div>
+              </span>
+            </div>
+          </div>
+        </div>
+        <p-table [value]="locationMasterData" [rowHover]="true">
+          <ng-template pTemplate="header">
+            <tr>
+              <th width="30">{{'MD2_ACTIVE'|lang}}</th>
+              <th width="110">{{'LO1_NAME'|lang}}</th>
+              <th width="50">{{'MD2_ON_HAND_QTY'|lang}}</th>
+              <th width="50">{{'MD2_AVAILABLE_QTY'|lang}}</th>
+              <th width="50">{{'MD2_MIN_QTY'|lang}}</th>
+              <th width="100">{{'UM1_RECEIPT_NAME'|lang}}</th>
+              <th width="70">{{'UM2_FACTOR'|lang}}</th>
+              <th width="100">{{'MD1_UM'|lang}}</th>
+              <th width="75">{{'... per '|lang}} {{ record.MD1_UM1_PRICE_NAME }}</th>
+              <th width="100">{{'VD1_NAME'|lang}}</th>
+              <th width="60">{{'MD2_PARTIAL'|lang}}</th>
+              <th width="50">{{'MD2_RACK'|lang}}</th>
+              <th width="60">{{'MD2_DRAWER'|lang}}</th>
+              <th width="50">{{'MD2_BIN'|lang}}</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-rowData let-index="rowIndex">
+            <tr valign="middle">
+              <td >
+                <mat-checkbox [labelPosition]="after"
+                              [(ngModel)]="rowData.MD2_ACTIVE"
+                              name="MD2_ACTIVE_{{index}}"
+                              [disabled]="rowData.LO1_CENTER_FLAG == 1 && record.MD1_CENTRAL_ORDER_FLAG == 1 && auth.accessLevel !== groupsservice.GROUP_ADMIN && auth.accessLevel !== groupsservice.GROUP_COMPANY_MANAGER">
+                </mat-checkbox>
+              </td>
+              <td>
+                {{rowData.LO1_NAME}}
+              </td>
+              <td>
+                <mat-form-field class="mat-form-field-width-auto">
+                  <input matInput type="number" min="0" step="1" [(ngModel)]="rowData.MD2_ON_HAND_QTY" [disabled]="!rowData.MD2_ACTIVE" name="MD2_ON_HAND_QTY_{{index}}" (focus)="$event.target.select()">
+                </mat-form-field>
+              </td>
+              <td>
+                <mat-form-field class="mat-form-field-width-auto">
+                  <input matInput type="number" min="0" step="1" [(ngModel)]="rowData.MD2_AVAILABLE_QTY" [disabled]="!rowData.MD2_ACTIVE" name="MD2_AVAILABLE_QTY_{{index}}" (focus)="$event.target.select()">
+                </mat-form-field>
+              </td>
+              <td>
+                <mat-form-field class="mat-form-field-width-auto">
+                  <input matInput type="number" min="0" step="1" [(ngModel)]="rowData.MD2_MIN_QTY" [disabled]="!rowData.MD2_ACTIVE" name="MD2_MIN_QTY_{{index}}" (focus)="$event.target.select()">
+                </mat-form-field>
+              </td>
+              <td>
+                <app-um-dropdown [(field)]="rowData.UM1_RECEIPT_ID" [materialDP]="false" [(name)]="UM1_RECEIPT_ID" [(dataProvider)]="umData" [disabled]="!rowData.MD2_ACTIVE" (change)="umReceiptChange($event, rowData);" ></app-um-dropdown>
+              </td>
+              <td>
+                <mat-form-field class="mat-form-field-width-auto">
+                  <input matInput type="number" step="1" min="0" [(ngModel)]="rowData.UM2_FACTOR" [disabled]="!rowData.MD2_ACTIVE || rowData.UM1_RECEIPT_ID == rowData.UM1_PURCHASE_ID" name="UM2_FACTOR_{{index}}" style="text-align: center;" (keyup)="umFactorChange($event, rowData)" (change)="umFactorChange($event, rowData)" >
+                </mat-form-field>
+              </td>
+              <td>
+                <app-um-dropdown [(field)]="rowData.UM1_PURCHASE_ID" [materialDP]="false" [(name)]="UM1_PURCHASE_ID" [(dataProvider)]="umData" [disabled]="!rowData.MD2_ACTIVE" (change)="umPurchaseChange($event, rowData);" ></app-um-dropdown>
+              </td>
+              <td>
+                <mat-form-field class="mat-form-field-width-auto">
+                  <input matInput type="number" step="1" min="0" [(ngModel)]="rowData.UM2_PRICE_FACTOR" [disabled]="!rowData.MD2_ACTIVE || rowData.UM1_PURCHASE_ID == record.UM1_PRICING_ID || this.record.MD1_CENTRAL_ORDER_FLAG" name="UM2_PRICE_FACTOR_{{index}}" style="text-align: center;" >
+                </mat-form-field>
+              </td>
+              <td>
+                <app-vendor-dropdown [(field)]="rowData.VD1_ID" [materialDP]="false" [dataProvider]="vendors"  [disabled]="!rowData.MD2_ACTIVE" (vendorChange)="vendorChange($event, rowData)" ></app-vendor-dropdown>
+              </td>
+              <td align="center">
+                <mat-checkbox   [(ngModel)]="rowData.MD2_PARTIAL"
+                                name="MD2_PARTIAL_{{index}}" [disabled]="!rowData.MD2_ACTIVE" ></mat-checkbox>
+              </td>
+              <td>
+                <app-rack-dropdown [(rackID)]="rowData.MD2_RACK" [materialDP]="false" [(LO1_RACKS)]="rowData.LO1_RACKS" [disabled]="!rowData.MD2_ACTIVE"  ></app-rack-dropdown>
+              </td>
+              <td>
+                <app-drawer-dropdown [(drawerID)]="rowData.MD2_DRAWER" [materialDP]="false" [disabled]="!rowData.MD2_ACTIVE" ></app-drawer-dropdown>
+              </td>
+              <td>
+                <app-bin-dropdown [(binID)]="rowData.MD2_BIN" [materialDP]="false" [disabled]="!rowData.MD2_ACTIVE" ></app-bin-dropdown>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <div *ngIf="!locationMasterData.length" class="col-12" style="width: 100%; margin-top: -1; border: 1px solid #c8c8c8 !important; padding: 0; color: #333333;">
+          {{'No records found'|lang}}
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle" width="425"></p-confirmDialog>

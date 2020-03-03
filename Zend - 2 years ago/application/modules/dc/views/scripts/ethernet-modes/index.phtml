@@ -1,0 +1,29 @@
+<script type="text/javascript" >
+
+Ext.application({
+    name: 'App',
+    appFolder: Ext.Loader.getPath('App'),
+    controllers: [],
+    launch: function (){
+
+        var grid = Ext.create('App.modules.dc.views.EthernetModes.Grid', {
+            renderTo: 'grid_ethernetModes',
+            buttons: ['add', 'delete', 'update'],
+            editable: true,
+            height: 'auto'
+        });
+
+        grid.getStore().load();
+    }
+});
+</script>
+<table width="100%" border="1" cellspacing="0" cellpadding="3" rules="none" >
+    <tr>
+        <th class="menu"><?=_('Ethernet modes');?></th>
+    </tr>
+    <tr>
+        <td style="padding-top:10px;">
+            <div id="grid_ethernetModes" ></div>
+        </td>
+    </tr>
+</table>

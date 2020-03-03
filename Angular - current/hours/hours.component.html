@@ -1,0 +1,67 @@
+<div #hoursView class="animated fadeIn">
+  <div #actionbar class="card-body" style="padding: 0;">
+    <div class="row">
+      <div class="col" align="left">
+        <ng-template [ngxPermissionsOnly]="[permissions.CUSTOMERS_ADD]" >
+          <button id="EditLaborHours" class="btn btn-primary" (click)="openEditLabor()" style="height: 35px">
+            {{'Edit Labor Hours'|lang}}
+          </button>
+        </ng-template>
+        <ng-template [ngxPermissionsOnly]="[permissions.HOURS_DELETE]" >
+          <button class="btn btn-danger" [disabled]="!selected" (click)="deleteClick()"><i class="fa fa-trash"></i> {{'#Delete#'|lang}}</button>
+        </ng-template>
+      </div>
+      <div class="col" align="right">
+        <ng-template [ngxPermissionsOnly]="[permissions.LANGUAGES_EDIT]" >
+          <button id="LanguageEditor" class="btn btn-light" (click)="openLanguageEditor()" style="height: 35px"><i class="fa fa-language"></i></button>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+  <p-table id="hoursTable" [styleClass]="'shadow'" [columns]="cols" [value]="items"
+           [responsive]="true" [loading]="loading" [rowHover]="true"
+           selectionMode="single" [scrollable]="true" [metaKeySelection]="true"
+           [paginator]="true" [rows]="size" [totalRecords]="totalRecords" [rowsPerPageOptions]="[50,100,200,300]"
+           [lazy]="true" (onPage)="onPage($event)"
+           [(selection)]="selected" [scrollHeight]="scrollHeight">
+    <ng-template pTemplate="header" let-columns>
+      <tr #tableHeader>
+        <th *ngFor="let col of columns" [hidden]="!col.visible" [ngStyle]="{'width': col.width +'px'}">
+          {{col.header}}
+        </th>
+      </tr>
+      <tr #tableFilter>
+        <th *ngFor="let col of columns" [ngSwitch]="col.field" [ngStyle]="{'width': col.width +'px'}">
+          <mat-form-field *ngSwitchCase="'TE1_NAME'" [style]="{'width':'100%'}">
+            <mat-select [formControl]="technicianCtrl" panelClass="mat-select-panel-class" disableOptionCentering (selectionChange)="filterChanged(col.field, $event.value)" [ngModel]="filter.TE1_NAME">
+              <ngx-mat-select-search [formControl]="technicianFilterCtrl" [noEntriesFoundLabel]="''" [placeholderLabel]="''"></ngx-mat-select-search>
+              <mat-option *ngFor="let technician of filteredTechnicians" [value]="technician.TE1_ID">
+                {{technician.TE1_NAME}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+      <tr [pSelectableRow]="rowData" (dblclick)="techicianClick(rowData)" [pSelectableRowIndex]="rowIndex">
+        <td *ngFor="let col of columns" [ngStyle]="{'width': col.width +'px'}">
+          <span *ngIf="col.field == 'TE1_NAME'" style="color: #0b58a2; font-weight: bold" (click)="techicianClick(rowData)">{{rowData[col.field]}}</span>
+          <span *ngIf="col.field == 'HO1_DATE'">{{dateFormat(rowData[col.field])}}</span>
+          <span *ngIf="col.field != 'TE1_NAME' && col.field != 'HO1_DATE'">{{rowData[col.field]}}</span>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-columns>
+      <tr>
+        <td [attr.colspan]="cols.length" >
+          {{'No records found'|lang}}
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="paginatorleft">
+      <div #paginator class="col-sm-12" style="padding-top: 5px;">{{'Hours'|lang}} ({{totalRecords}} {{'#Records#'|lang}})</div>
+    </ng-template>
+  </p-table>
+</div>
+<p-confirmDialog acceptLabel="{{acceptLabel}}" header="{{confirmationHeader}}" icon="pi pi-exclamation-triangle" width="425"></p-confirmDialog>

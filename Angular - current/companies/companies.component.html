@@ -1,0 +1,110 @@
+<div #companiesView class="animated fadeIn">
+  <div #actionbar class="card-body" style="padding: 0;">
+    <div class="row">
+      <div class="col" align="left">
+        <ng-template [ngxPermissionsOnly]="[permissions.COMPANIES_ADD]" >
+          <button type="button" class="btn btn-success" (click)="addClick()" >
+            <i class="fa fa-plus-square"></i> {{'#New#'|lang}}
+          </button>
+        </ng-template>
+        <ng-template [ngxPermissionsOnly]="[permissions.COMPANIES_EDIT]" >
+          <button type="button" class="btn btn-primary" [disabled]="!selected" (click)="editRecord()" >
+            <i class="fa fa-pencil"></i> {{'#Edit#'|lang}}
+          </button>
+        </ng-template>
+        <ng-template [ngxPermissionsOnly]="[permissions.COMPANIES_ADD]" >
+          <button type="button" class="btn btn-primary" [disabled]="!selected" (click)="cloneRecord()" >
+            <i class="fa fa-clone"></i> {{'#Copy#'|lang}}
+          </button>
+        </ng-template>
+        <ng-template [ngxPermissionsOnly]="[permissions.COMPANIES_DELETE]" >
+          <button type="button" class="btn btn-danger" [disabled]="!selected" (click)="deleteRecord()" >
+            <i class="fa fa-trash"></i> {{'#Delete#'|lang}}
+          </button>
+        </ng-template>
+      </div>
+      <div class="col" align="right">
+        <ng-template [ngxPermissionsOnly]="[permissions.DASHBOARD_READ]" >
+          <button type="button" class="btn btn-light" (click)="exportClick()"><img src="assets/img/ExportXLS.png" height="21" width="21"></button>
+        </ng-template>
+        <ng-template [ngxPermissionsOnly]="[permissions.DASHBOARD_READ]" >
+          <button id="LanguageEditor" class="btn btn-light" (click)="openLanguageEditor()" style="height: 35px"><i class="fa fa-language"></i></button>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+  <p-table [styleClass]="'shadow'" [columns]="cols" [value]="items"
+           [responsive]="true" [loading]="loading" [rowHover]="true"
+           selectionMode="single" [scrollable]="true" [metaKeySelection]="true"
+           [paginator]="true" [rows]="size" [totalRecords]="totalRecords" [rowsPerPageOptions]="[50,100,200,300]"
+           [lazy]="true" (onPage)="onPage($event)"
+           [(selection)]="selected" [scrollHeight]="scrollHeight">
+    <ng-template pTemplate="header" let-columns>
+      <tr  #tableHeader>
+        <th *ngFor="let col of columns" [ngStyle]="{'text-align': col.align, 'width': col.width +'px' }" >
+          {{col.header}}
+        </th>
+      </tr>
+      <tr #tableFilter>
+        <th *ngFor="let col of columns" [ngSwitch]="col.field" [ngStyle]="{'width': col.width +'px'}" [hidden]="!col.visible">
+          <input *ngSwitchCase="'CO1_SHORT_CODE'" [(ngModel)]="page.filterParams[col.field]" pInputText type="text" [style]="{'width':'100%'}" (keydown)="buttonPress($event, col.field, $event.target.value);">
+          <input *ngSwitchCase="'CO1_NAME'" [(ngModel)]="page.filterParams[col.field]" pInputText type="text" [style]="{'width':'100%'}" (keydown)="buttonPress($event, col.field, $event.target.value);">
+          <input *ngSwitchCase="'CO1_ADDRESS1'" [(ngModel)]="page.filterParams[col.field]" pInputText type="text" [style]="{'width':'100%'}" (keydown)="buttonPress($event, col.field, $event.target.value);">
+          <input *ngSwitchCase="'CO1_CITY'" [(ngModel)]="page.filterParams[col.field]" pInputText type="text" [style]="{'width':'100%'}" (keydown)="buttonPress($event, col.field, $event.target.value);">
+          <input *ngSwitchCase="'CO1_STATE'" [(ngModel)]="page.filterParams[col.field]" pInputText type="text" [style]="{'width':'100%'}" (keydown)="buttonPress($event, col.field, $event.target.value);">
+          <mat-form-field *ngSwitchCase="'CY1_SHORT_CODE'" [style]="{'width':'100%'}">
+            <mat-select [formControl]="countryCtrl" panelClass="mat-select-panel-class" disableOptionCentering (selectionChange)="filterChanged('CY1_ID', $event.value)" [ngModel]="filter.CY1_SHORT_CODE">
+              <ngx-mat-select-search [formControl]="countryFilterCtrl" [noEntriesFoundLabel]="''" [placeholderLabel]="''"></ngx-mat-select-search>
+              <mat-option *ngFor="let country of filteredCountries" [value]="country.CY1_ID">
+                {{country.CY1_SHORT_CODE}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <input *ngSwitchCase="'CO1_ZIP'" [(ngModel)]="page.filterParams[col.field]" pInputText type="text" [style]="{'width':'100%'}" (keydown)="buttonPress($event, col.field, $event.target.value);">
+          <input *ngSwitchCase="'CO1_PHONE'" [(ngModel)]="page.filterParams[col.field]" pInputText type="text" [style]="{'width':'100%'}" (keydown)="buttonPress($event, col.field, $event.target.value);">
+          <input *ngSwitchCase="'CO1_FAX'" [(ngModel)]="page.filterParams[col.field]" pInputText type="text" [style]="{'width':'100%'}" (keydown)="buttonPress($event, col.field, $event.target.value);">
+          <mat-form-field *ngSwitchCase="'CO1_MITCHELL_FLAG'" [style]="{'width':'100%'}">
+            <mat-select (selectionChange)="filterChanged(col.field, $event.value)">
+              <mat-option *ngFor="let flag of flagsDP" [value]="flag.value">
+                {{flag.label}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field *ngSwitchCase="'CO1_CCC_FLAG'" [style]="{'width':'100%'}">
+            <mat-select (selectionChange)="filterChanged(col.field, $event.value)">
+              <mat-option *ngFor="let flag of flagsDP" [value]="flag.value">
+                {{flag.label}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field *ngSwitchCase="'CO1_LITE'" [style]="{'width':'100%'}">
+            <mat-select (selectionChange)="filterChanged(col.field, $event.value)">
+              <mat-option *ngFor="let flag of flagsDP" [value]="flag.value">
+                {{flag.label}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns" >
+      <tr [pSelectableRow]="rowData" (dblclick)="editRecord(rowData)" >
+        <td *ngFor="let col of columns" [ngStyle]="{'text-align': col.align, 'width': col.width +'px', 'overflow': 'hidden'}" >
+          <span *ngIf="col.field == 'CO1_MITCHELL_FLAG' || col.field == 'CO1_CCC_FLAG' || col.field == 'CO1_LITE'"><i *ngIf="rowData[col.field] == 1" class="fa fa-check"></i><span *ngIf="rowData[col.field] != 1">-</span></span>
+          <span *ngIf="col.field != 'CO1_MITCHELL_FLAG' && col.field != 'CO1_CCC_FLAG' && col.field != 'CO1_LITE'">{{rowData[col.field]}}</span>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-columns>
+      <tr>
+        <td [attr.colspan]="cols.length" >
+          {{'No records found'|lang}}
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="paginatorleft">
+      <div #paginator class="col-sm-12" style="padding-top: 5px;">{{'Companies'|lang}} ({{totalRecords}} {{'#Records#'|lang}})</div>
+    </ng-template>
+  </p-table>
+</div>
+<p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle" width="425"></p-confirmDialog>

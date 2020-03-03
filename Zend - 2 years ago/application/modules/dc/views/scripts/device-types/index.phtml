@@ -1,0 +1,32 @@
+<script type="text/javascript" >
+
+Ext.application({
+    name: 'App',
+    appFolder: Ext.Loader.getPath('App'),
+    controllers: [
+        'App.modules.dc.controllers.DeviceTypes'
+    ],
+
+    init: function(){
+        Sjx.getStore('App.modules.dc.stores.UnitTypes').loadData(<?php
+            echo $this->printArrayToJsObj($this->unitTypes, array(
+            'unittype', 'name' )); ?>);
+
+        Sjx.getStore('App.modules.dc.stores.DeviceTypeGreeting').loadData(<?php
+            echo $this->printArrayToJsObj(  $this->deviceTypeGreeting, array( 'dtgid', 'decription' ) ); ?>);
+    },
+    launch: function(){
+        Ext.create('App.modules.dc.views.DeviceTypes.Index', {
+            renderTo: 'grid_deviceType'
+        });
+    }
+});
+</script>
+<table width="100%" cellspacing="0" cellpadding="3" rules="all"  border="1">
+    <tr><th class="menu"><?=_('Device types');?></th></tr>
+    <tr>
+        <td>
+            <div id="grid_deviceType" ></div>
+        </td>
+    </tr>
+</table>
